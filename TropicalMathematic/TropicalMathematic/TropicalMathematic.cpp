@@ -1,5 +1,6 @@
 // TropicalMathematic.cpp: определяет точку входа для консольного приложения.
 //
+#include <windows.h>
 #include "stdafx.h"
 #include "Matrix.h"
 #include <string>
@@ -17,25 +18,49 @@ void startSolving(Matrix matrix)
 {
 	std::cout << "Here" << std::endl;
 	Matrix origin(matrix.matrix, matrix.str);
-	Matrix matrixForBlockDiagonal(origin.matrix, origin.str);
-	Tropical_Int* blockDiagonalAnswer = new Tropical_Int[matrix.str];
-	auto isResolvable = matrixForBlockDiagonal.blockDiagonalSolving(blockDiagonalAnswer);
-	matrix.searchDownMatrix();
-	Tropical_Int *answer = new Tropical_Int[matrix.str];
+	// Matrix matrixForBlockDiagonal(origin.matrix, origin.str);
+	Tropical_Int *blockDiagonalAnswer = new Tropical_Int[matrix.str];
+
+	std::vector<Matrix*>* matrixesForSimpleSoultion = new std::vector<Matrix*>;
+	std::vector<Matrix*>* matrixesForBlockSoultion = new std::vector<Matrix*>;
+
+	for(int i = 0; i < 10000; ++i)
+	{
+		matrixesForSimpleSoultion->push_back(new Matrix(origin.matrix, origin.str));
+		matrixesForBlockSoultion->push_back(new Matrix(origin.matrix, origin.str));
+	}
+
+	int start = GetTickCount();
+	for (int i = 0; i < 10000; ++i)
+	{
+		(*matrixesForSimpleSoultion)[i]->searchDownMatrix();
+	}
+	int end = GetTickCount();
+	std::cout << "Time of simple alghoritm" << end - start << std::endl;
+
+	start = GetTickCount();
+	for (int i = 0; i < 10000; ++i)
+	{
+		(*matrixesForBlockSoultion)[i]->blockDiagonalSolving(blockDiagonalAnswer);
+	}
+	end = GetTickCount();
+	std::cout << "Time of multithread alghoritm" << end - start << std::endl;
+ 	Tropical_Int *answer = new Tropical_Int[matrix.str];
+	// matrixesForSimpleSoultion[0].getAnswer(origin);
 	// auto isResolvable = matrixForBlockDiagonal.rightGetAnswer(origin, answer);
-	if(isResolvable)
-	{
-		for(int i = 0; i < matrixForBlockDiagonal.str; ++i)
-		{
-			std::cout << blockDiagonalAnswer[i] << " ";
-		}
-		std::cout << std::endl;
-	}
-	else
-	{
-		std::cout << "Matrix is unresolvable" << std::endl; 
-	}
-	matrix.getAnswer(origin);
+	// if (isResolvable)
+	// {
+	// 	for (int i = 0; i < matrixForBlockDiagonal.str; ++i)
+	// 	{
+	// 		std::cout << blockDiagonalAnswer[i] << " ";
+	// 	}
+	// 	std::cout << std::endl;
+	// }
+	// else
+	// {
+	// 	std::cout << "Matrix is unresolvable" << std::endl;
+	// }
+	// matrix.getAnswer(origin);
 }
 
 int main()

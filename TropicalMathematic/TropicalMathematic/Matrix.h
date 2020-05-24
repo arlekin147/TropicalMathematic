@@ -1,4 +1,5 @@
 #pragma once
+#include <windows.h>
 #include "Tropical_Int.h"
 #include <climits>
 #include <vector>
@@ -294,7 +295,7 @@ public:
 		{
 			threads[i]->join();
 		}
-		return true;
+		return *allMatrixResolvable;
 	}
 
 	Tropical_Int **matrix;
@@ -312,8 +313,7 @@ private:
 		while (leftSize)
 		{
 			auto currentSize = 0;
-			for (int j = currentJPosition; this->matrix[currentIPosition][j] != 2147483647 && j != this->str; ++j, ++currentSize)
-				;
+			for (int j = currentJPosition; this->matrix[currentIPosition][j] != 2147483647 && j != this->str; ++j, ++currentSize);
 			Tropical_Int **subMatrix = new Tropical_Int *[currentSize];
 			for (int i = currentIPosition; i < currentIPosition + currentSize; ++i)
 			{

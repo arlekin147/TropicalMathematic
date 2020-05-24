@@ -30,7 +30,7 @@ namespace MatrixGenerator
                     }
                     case 1:
                     {
-                        matrixes.Add(generator.GenerateBlockDiagonalMatrix(size, size, 4, int.MaxValue));
+                        matrixes.Add(generator.GenerateBlockFavoriteMatrix(size, size, size / 4, int.MaxValue));
                         break;
                     }
                     case 2:
