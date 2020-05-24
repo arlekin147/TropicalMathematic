@@ -2,6 +2,11 @@
 #include "Tropical_Int.h"
 #include <climits>
 #include <vector>
+#include "threads/mingw.thread.h"
+#include <thread>
+
+class Matrix;
+void startSolving(Matrix matrix, bool *allMatrixResolvable, Tropical_Int *answer, int currentAnswerPosition);
 
 class Matrix
 {
@@ -274,18 +279,21 @@ public:
 		auto subMatrixes = getBlocks();
 
 		int currentAnswerPosition = 0;
+		bool *allMatrixResolvable = new bool;
+		*allMatrixResolvable = true;
+		std::vector<std::thread*> threads;
 		for (auto subMatrix : subMatrixes)
 		{
-			Matrix subMatrixCopy(subMatrix.matrix, subMatrix.str);
-			subMatrix.searchDownMatrix();
-			auto isSubSystemResolvable = subMatrix.rightGetAnswer(subMatrixCopy, answer + currentAnswerPosition);
-
-			if (!isSubSystemResolvable)
-				return false;
+			std::thread* resolving = new std::thread(startSolving, subMatrix, allMatrixResolvable, answer, currentAnswerPosition);
+			threads.push_back(resolving);
 
 			currentAnswerPosition += subMatrix.str;
 		}
 
+		for(int i = 0; i < threads.size(); ++i)
+		{
+			threads[i]->join();
+		}
 		return true;
 	}
 
@@ -325,3 +333,12 @@ private:
 		return subMatrixes;
 	}
 };
+
+void startSolving(Matrix matrix, bool *allMatrixResolvable, Tropical_Int *answer, int currentAnswerPosition)
+{
+	Matrix matrixCopy(matrix.matrix, matrix.str);
+	matrix.searchDownMatrix();
+	auto isSubSystemResolvable = matrix.rightGetAnswer(matrixCopy, answer + currentAnswerPosition);
+	if (!isSubSystemResolvable)
+		*allMatrixResolvable = false;
+}
