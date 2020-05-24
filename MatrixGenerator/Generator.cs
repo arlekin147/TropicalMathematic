@@ -22,7 +22,7 @@ namespace MatrixGenerator
             return matrix;
         }
 
-        public Matrix GenerateBlockDiagonalMatrix(int rows, int collumns, int maxBlockSize)
+        public Matrix GenerateBlockDiagonalMatrix(int rows, int collumns, int maxBlockSize, int filler = 0)
         {
             var leftSize = collumns;
             var currentPoint = (i: 0, j: 0);
@@ -33,6 +33,14 @@ namespace MatrixGenerator
                 elements[i] = new int[collumns];
             }
 
+            for(int i = 0; i < rows; ++i)
+            {
+                for(int j = 0; j < collumns; ++j)
+                {
+                    elements[i][j] = filler;
+                }
+            }
+
             while(leftSize != 0)
             {
                 var curerntBlockSize = 0;
@@ -41,7 +49,7 @@ namespace MatrixGenerator
                 {
                     for(int j = 0; j < curerntBlockSize; ++j)
                     {
-                        elements[currentPoint.i + i][currentPoint.j + j] = Program.Random.Next() + 1;
+                        elements[currentPoint.i + i][currentPoint.j + j] = Program.Random.Next();
                     }
                 }
 
@@ -55,7 +63,7 @@ namespace MatrixGenerator
             return matrix;
         }
 
-        public Matrix GenerateThreeDiagonalMartix(int rows, int collumns)
+        public Matrix GenerateThreeDiagonalMartix(int rows, int collumns, int filler)
         {
             var matrixElements = new int[rows][];
 
@@ -64,7 +72,7 @@ namespace MatrixGenerator
                 matrixElements[i] = new int[collumns];
                 for(int j = 0; j < collumns; ++j)
                 {
-                    matrixElements[i][j] =  Math.Abs(i - j) < 2 ? Program.Random.Next() : 0;
+                    matrixElements[i][j] =  Math.Abs(i - j) < 2 ? Program.Random.Next() : filler;
                 }
             }
 

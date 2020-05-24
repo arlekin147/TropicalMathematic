@@ -30,12 +30,12 @@ namespace MatrixGenerator
                     }
                     case 1:
                     {
-                        matrixes.Add(generator.GenerateBlockDiagonalMatrix(size, size, 4));
+                        matrixes.Add(generator.GenerateBlockDiagonalMatrix(size, size, 4, int.MaxValue));
                         break;
                     }
                     case 2:
                     {
-                        matrixes.Add(generator.GenerateThreeDiagonalMartix(size, size));
+                        matrixes.Add(generator.GenerateThreeDiagonalMartix(size, size, int.MaxValue));
                         break;
                     }
                 }

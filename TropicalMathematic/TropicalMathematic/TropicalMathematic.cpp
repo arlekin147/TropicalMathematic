@@ -1,16 +1,43 @@
 // TropicalMathematic.cpp: определяет точку входа для консольного приложения.
 //
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
 #include "stdafx.h"
 #include "Matrix.h"
 #include <string>
 #include <fstream>
 #include <streambuf>
 #include <vector>
+#include "threads/mingw.thread.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+// #include "rapidjson/stringbuffer.h"
+#include <thread>
 
 using namespace rapidjson;
+
+void startSolving(Matrix matrix)
+{
+	std::cout << "Here" << std::endl;
+	Matrix origin(matrix.matrix, matrix.str);
+	Matrix matrixForBlockDiagonal(origin.matrix, origin.str);
+	Tropical_Int* blockDiagonalAnswer = new Tropical_Int[matrix.str];
+	auto isResolvable = matrixForBlockDiagonal.blockDiagonalSolving(blockDiagonalAnswer);
+	matrix.searchDownMatrix();
+	Tropical_Int *answer = new Tropical_Int[matrix.str];
+	// auto isResolvable = matrixForBlockDiagonal.rightGetAnswer(origin, answer);
+	if(isResolvable)
+	{
+		for(int i = 0; i < matrixForBlockDiagonal.str; ++i)
+		{
+			std::cout << blockDiagonalAnswer[i] << " ";
+		}
+		std::cout << std::endl;
+	}
+	else
+	{
+		std::cout << "Matrix is unresolvable" << std::endl; 
+	}
+	matrix.getAnswer(origin);
+}
 
 int main()
 {
@@ -25,20 +52,14 @@ int main()
 	str2.assign((std::istreambuf_iterator<char>(t)),
 				std::istreambuf_iterator<char>());
 
-	// std::cout << str2;
-
 	Document document;
 	document.Parse(str2.c_str());
 	const Value &a = document.GetArray();
 	int numberOfMatrixes = document.Size();
-	std::cout << "Size: " << numberOfMatrixes << std::endl;
 	auto matrix = a[0].GetObject()["Elements"].GetArray();
 	auto array = a[0].GetObject()["Elements"].GetArray();
 
 	auto size = a[0].GetObject()["Rows"].GetInt();
-
-	std::cout << document.GetArray().Size();
-	std::cout << document.Size();
 
 	Tropical_Int **parsedMatrix;
 	std::vector<Matrix> tropicalMatrixes;
@@ -60,8 +81,6 @@ int main()
 		tropicalMatrixes.push_back(Matrix(parsedMatrix, size));
 	}
 
-	std::cout << parsedMatrix[0][0];
-
 	// for (SizeType i = 0; i < matrix.Size(); i++) // Uses SizeType instead of size_t
 	// 	for(SizeType j = 0; j < matrix.Size(); ++j)
 	// 		printf("a[%d][%d] = %d " , i, j, matrix[i][j].GetInt());
@@ -78,10 +97,14 @@ int main()
 	// Matrix downMatrix(parsedMatrix, size); //= input;
 	for (auto matrix : tropicalMatrixes)
 	{
-		matrix.searchDownMatrix();
+		// for (int i = 0; i < 1000; ++i)
+		// {
+		// std::thread threadForSolving(startSolving, matrix);
+		// threadForSolving.join();
+		// }
+		startSolving(matrix);
 	}
-	// downMatrix.getAnswer(input);
+	std::cout.flush();
 	std::cout << "Finish";
-	getch();
 	return 0;
 }
