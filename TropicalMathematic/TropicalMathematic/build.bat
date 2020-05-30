@@ -1,0 +1,1 @@
+g++ .\TropicalMathematic.cpp -D_WIN32_WINNT=0x0501 -o t.exe
